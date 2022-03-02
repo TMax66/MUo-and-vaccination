@@ -2,31 +2,33 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 library(here)
-
+library(survminer)
+library(survival)
+library(ggfortify)
 
  
 
 dt  <- read.csv( here("data", "dati.csv"), sep=";")
-dtMUO <- dt %>% 
-  select(-X, -X.1, -X.2, -X.3) %>% 
-  filter(!is.na(ddiagnosis) & !is.na(dlastvacc))  
-  
-# dtMUO %>% 
-# mutate(ddiagnosis = ymd(ddiagnosis), 
-#          dlastvacc = ymd(dlastvacc))  
 
-dtMUO <- dtMUO[-c(64,65),]
+df <- dt  %>%
+  filter(!is.na(ddiagnosis) & !is.na(dlastvacc)) %>%  
+  select(id, diagnosis, MUO, dbirth, ddiagnosis, dlastvacc, ageatdiag) %>% 
+  mutate(ddiagnosis = dmy(ddiagnosis), 
+          dlastvacc = dmy(dlastvacc), 
+         timetod = ddiagnosis-dlastvacc, 
+         Cens = ifelse(MUO == "no", 1, 0)) %>% 
+  filter(timetod >0)
+         
+fit<-survfit(Surv(timetod, Cens)~1,data = df )
 
-dtMUO$ddiagnosis
+ggsurvplot(1-fit, data = df, color = "lightblue",xlim = c(0,500))
+ 
 
-ymd(dtMUO$ddiagnosis)
+autoplot(fit, fun = "event")+
+  theme_bw()
+
 
 
  
-# t = as.numeric(dtMUO$ddiagnosis-dtMUO$dlastvacc)
-# efftime = ifelse(t>=60, 1, 0)
-# Frq = rep(1, nrow(dtMUO))
-# rr = sum(efftime*(365-Frq))/sum(1-efftime)*Frq
-#   
 
- 
+
