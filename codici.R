@@ -21,11 +21,12 @@ df <- dt  %>%
          
 fit<-survfit(Surv(timetod, Cens)~1,data = df )
 
-ggsurvplot(1-fit, data = df, color = "lightblue",xlim = c(0,500))
+g
  
 
 autoplot(fit, fun = "event")+
-  theme_bw()
+  theme_bw()+
+  labs(title = "Probability of MUO days after vaccination", x= "days after vaccination", y = "Probability to MUO diagnosis")
 
 
 
