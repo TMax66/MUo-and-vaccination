@@ -19,7 +19,7 @@ df <- dt  %>%
          Cens = ifelse(MUO == "no", 1, 0)) %>% 
   filter(timetod >0)
          
-fit<-survfit(Surv(timetod, Cens)~1,data = df )
+fit<-survfit(Surv(timetod)~1,data = df )
 
 g
  
@@ -32,4 +32,10 @@ autoplot(fit, fun = "event")+
 
  
 
+library(cmprsk)
 
+ci_fit <- 
+  cuminc(
+    ftime = df$timetod, 
+    fstatus = df$MUO
+  )
