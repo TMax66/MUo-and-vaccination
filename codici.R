@@ -19,16 +19,23 @@ df <- dt  %>%
          Cens = ifelse(MUO == "no", 1, 0)) %>% 
   filter(timetod >0)
          
-fit<-survfit(Surv(timetod, Cens)~1,data = df )
+fit<-survfit(Surv(timetod)~1,data = df )
 
-ggsurvplot(1-fit, data = df, color = "lightblue",xlim = c(0,500))
+g
  
 
 autoplot(fit, fun = "event")+
-  theme_bw()
+  theme_bw()+
+  labs(title = "Probability of MUO days after vaccination", x= "days after vaccination", y = "Probability to MUO diagnosis")
 
 
 
  
 
+library(cmprsk)
 
+ci_fit <- 
+  cuminc(
+    ftime = df$timetod, 
+    fstatus = df$MUO
+  )
