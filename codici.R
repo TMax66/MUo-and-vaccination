@@ -6,7 +6,7 @@ library(survminer)
 library(survival)
 library(ggfortify)
 
- 
+source("cumulative.r")
 
 dt  <- read.csv( here("data", "dati.csv"), sep=";")
 
@@ -21,8 +21,20 @@ df <- dt  %>%
          
 fit<-survfit(Surv(timetod)~1,data = df )
 
-g
- 
+
+ggsurvplot(fit,
+          conf.int = TRUE,
+           risk.table = TRUE, # Add risk table
+           surv.median.line = "hv", # Specify median survival
+           ggtheme = theme_bw(), 
+          fun = "event", 
+          palette = "blue"
+)
+
+
+
+
+
 
 autoplot(fit, fun = "event")+
   theme_bw()+
